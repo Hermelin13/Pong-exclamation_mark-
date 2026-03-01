@@ -1,3 +1,0 @@
-# Hashes of file build rules.
-6013f039f46c84837941a438458e7008 CMakeFiles/pong_autogen
-aaf808af072315ff33761efbac98ee3a pong_autogen/timestamp
