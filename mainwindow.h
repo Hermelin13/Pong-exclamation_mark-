@@ -9,6 +9,8 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
+class GameWidget;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -19,5 +21,6 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    GameWidget *gameWidget;
 };
 #endif // MAINWINDOW_H
