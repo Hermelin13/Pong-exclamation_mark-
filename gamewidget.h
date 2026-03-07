@@ -2,6 +2,7 @@
 #define GAMEWIDGET_H
 
 #include <QWidget>
+#include <QTimer>
 
 class GameWidget : public QWidget
 {
@@ -15,7 +16,9 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
-    void timerEvent(QTimerEvent *event) override;
+
+private slots:
+    void gameLoop();
 
 private:
     void resetBall();
@@ -30,14 +33,12 @@ private:
 
     double ballX, ballY;
     double ballDX, ballDY;
-
     double playerY;
     double aiY;
-
     int playerScore;
     int aiScore;
 
-    int gameTimerId;
+    QTimer *gameTimer;
     bool paused;
 };
 

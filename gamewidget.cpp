@@ -1,11 +1,8 @@
 #include "gamewidget.h"
-
 #include <QPainter>
 #include <QMouseEvent>
 #include <QKeyEvent>
-#include <QTimerEvent>
 #include <cmath>
-#include <random>
 
 GameWidget::GameWidget(QWidget *parent)
     : QWidget(parent)
@@ -19,28 +16,16 @@ GameWidget::GameWidget(QWidget *parent)
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
     resetBall();
-    gameTimerId = startTimer(16); // ~60 FPS
+
+    gameTimer = new QTimer(this);
+    gameTimer->setInterval(16);
+    connect(gameTimer, &QTimer::timeout, this, &GameWidget::gameLoop);
+    gameTimer->start();
 }
 
-void GameWidget::resetBall()
+// Every 16 ms
+void GameWidget::gameLoop()
 {
-    ballX = W / 2.0 - BALL_SZ / 2.0;
-    ballY = H / 2.0 - BALL_SZ / 2.0;
-    std::mt19937 rng(std::random_device{}());
-    std::uniform_int_distribution<int> coin(0, 1);
-    ballDX = (coin(rng) == 0) ? 5.0 : -5.0;
-    ballDY = (coin(rng) == 0) ? 3.0 : -3.0;
-}
-
-QSize GameWidget::sizeHint() const
-{
-    return QSize(W, H);
-}
-
-void GameWidget::timerEvent(QTimerEvent *event)
-{
-    if (event->timerId() != gameTimerId)
-        return;
     if (paused)
         return;
 
@@ -78,6 +63,7 @@ void GameWidget::timerEvent(QTimerEvent *event)
         && ballY <= aiY + PADDLE_H) {
         ballX = AI_X - BALL_SZ;
         ballDX = -std::abs(ballDX);
+        // Add slight angle variation based on hit position
         double relHit = (ballY + BALL_SZ / 2.0 - aiY) / PADDLE_H;
         ballDY = (relHit - 0.5) * 8.0;
     }
@@ -157,10 +143,15 @@ void GameWidget::mouseMoveEvent(QMouseEvent *event)
     update();
 }
 
+// Pause
 void GameWidget::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Space) {
         paused = !paused;
+        if (paused)
+            gameTimer->stop();
+        else
+            gameTimer->start();
         update();
     }
 }
