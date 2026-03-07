@@ -3,6 +3,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <cmath>
+#include <random>
 
 GameWidget::GameWidget(QWidget *parent)
     : QWidget(parent)
@@ -21,6 +22,21 @@ GameWidget::GameWidget(QWidget *parent)
     gameTimer->setInterval(16);
     connect(gameTimer, &QTimer::timeout, this, &GameWidget::gameLoop);
     gameTimer->start();
+}
+
+void GameWidget::resetBall()
+{
+    ballX = W / 2.0 - BALL_SZ / 2.0;
+    ballY = H / 2.0 - BALL_SZ / 2.0;
+    std::mt19937 rng(std::random_device{}());
+    std::uniform_int_distribution<int> coin(0, 1);
+    ballDX = (coin(rng) == 0) ? 5.0 : -5.0;
+    ballDY = (coin(rng) == 0) ? 3.0 : -3.0;
+}
+
+QSize GameWidget::sizeHint() const
+{
+    return QSize(W, H);
 }
 
 // Every 16 ms
